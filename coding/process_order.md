@@ -8,6 +8,92 @@ n = 5 processOrder = [2, 3, 5, 1, 4] executionOrder = [5, 2, 3, 4, 1]
 We see that 2 processes would give inaccurate results and these would be the process number 5 and 4.
 
 Process 5 gives inaccurate results because in the original order, it needs processes 2 and 3 to run successfully, and the individual executes both of them after process 5. Also, process 4 needs all the other processes to be executed before it runs properly. But the individual executes process 1 afterward, resulting in 4 giving inaccurate results
+Therefore, 2 processes give inaccurate results.
+Function Description
+Complete the function getInaccurateProcesses in the editor below.
+getInaccurate Processes has the following parameters:
+int processOrder[n]: Order in which the processes should be executed.
+int executionOrder[n]:Order in which the processes were actually executed.
+Returns
+int: the count of processes that fail to produce accurate results due to the deviation from the specified order.
+Constraints
+1<=n<=2*10^5
+1 ≤ processOrder[i], executionOrder[i] ≤ n
+processOrder and executionOrder are permutations of integers from 1 to n
+
+---
+laest solution
+
+```c++
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
+int getInaccurateProcesses(vector<int>& processOrder, vector<int>& executionOrder) {
+    int n = processOrder.size();
+    
+    // Create a map to store the position of each process in the correct order
+    unordered_map<int, int> processPosition;
+    for(int i = 0; i < n; i++) {
+        processPosition[processOrder[i]] = i;
+    }
+    
+    // Create a map to store required processes for each process
+    unordered_map<int, unordered_set<int>> requirements;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < i; j++) {
+            requirements[processOrder[i]].insert(processOrder[j]);
+        }
+    }
+    
+    // Track executed processes
+    unordered_set<int> executed;
+    int inaccurateCount = 0;
+    
+    // Check each process in execution order
+    for(int process : executionOrder) {
+        // Check if all required processes have been executed
+        bool isAccurate = true;
+        for(int req : requirements[process]) {
+            if(executed.find(req) == executed.end()) {
+                isAccurate = false;
+                break;
+            }
+        }
+        
+        if(!isAccurate) {
+            inaccurateCount++;
+        }
+        
+        executed.insert(process);
+    }
+    
+    return inaccurateCount;
+}
+
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <iostream>
+using namespace std;
+
+// Previous getInaccurateProcesses function remains the same
+
+int main() {
+    // Test case from the problem
+    vector<int> processOrder = {2, 3, 5, 1, 4};
+    vector<int> executionOrder = {5, 2, 3, 4, 1};
+    
+    int result = getInaccurateProcesses(processOrder, executionOrder);
+    
+    cout << "Number of inaccurate processes: " << result << endl;
+    // Expected output: Number of inaccurate processes: 2
+    
+    return 0;
+}
+
+```
 
 ---
 solution 1 : telegram - python
